@@ -11,7 +11,7 @@ Produces CSV file on review
 - Videos
 
 ## Dependencies
-- >= Python 3.7
+- &gt;= Python 3.7
 - pandas
 
 ## Usage
