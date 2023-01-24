@@ -9,6 +9,7 @@ from sgnlp.models.sentic_gcn import(
 )
 import json
 
+# Test data, to be chamged to reading csv file
 testData = [
     'Tried it and works well! Can mirror phone on TV screen easily', 
     'Working well and delivery time is relatively fast from China',
@@ -17,6 +18,8 @@ testData = [
     "delivery was quite slow, I needed it urgently. but it was 11.11 so I Guess that’s the reason why? Cable works well, tried and tested. Thank you!"
 ]
 
+
+# Model config stuff
 tokenizer = SenticGCNBertTokenizer.from_pretrained("bert-base-uncased")
 
 config = SenticGCNBertConfig.from_pretrained(
@@ -41,8 +44,14 @@ preprocessor = SenticGCNBertPreprocessor(
 
 postprocessor = SenticGCNBertPostprocessor()
 
+
 finalInput = []
 
+# Manual input of the different aspects for now
+# Planning to change to generalize aspects with common meanings
+# E.g.
+#    delivery: delivery, shipping
+#    quality: work, works, working, quality, condition
 for review in testData:
     aspects = []
 
@@ -68,6 +77,7 @@ for review in testData:
         }
     )
 
+
 # inputAspect = input('Enter aspects: ')
 
 # inputReview = input('Enter review: ')
@@ -79,12 +89,15 @@ for review in testData:
 #     }
 # ]
 
+
+# Sending inputs to model to process and predict
 processed_inputs, processed_indices = preprocessor(finalInput)
 raw_outputs = model(processed_indices)
 
 post_outputs = postprocessor(processed_inputs=processed_inputs, model_outputs=raw_outputs)
 
-print('\n\n\n')
+
+print('\n\n')
 
 print(finalInput)
 
@@ -92,6 +105,7 @@ for output in post_outputs:
     print(output)
 
 
+# Writing results to file, since a bit hard to see if just printing to console
 with open('resOutput.txt', 'w') as f:
     f.write('Inputs to Model\n')
     for reviewInput in finalInput:
