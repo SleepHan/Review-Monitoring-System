@@ -1,2 +1,5 @@
 # Ignore Output files created
 resOutput.txt
+
+# Ignore __pycache__
+__pycache__/
