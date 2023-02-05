@@ -54,7 +54,7 @@ def getReviews(url, csv=False):
         print("CSV Exported!")
     else:
         print("Reviews extracted")
-        return d
+        return pd.DataFrame(d)
 
 if __name__ == "__main__":
 

@@ -14,17 +14,28 @@ import pandas as pd
 import numpy as np
 import argparse
 import re
+from  ExtractReviewShopee import getReviews
 
+
+# ====================================== Argument Parser Config =====================================
 # Create the parser
 parser = argparse.ArgumentParser()
+group = parser.add_mutually_exclusive_group(required=True)
+
 # Add an argument
-parser.add_argument('--csv', type=str, required=True)
+group.add_argument('--csv', type=str)
+group.add_argument('--url', type=str)
+
 # Parse the argument
 args = parser.parse_args()
 
+
+# ================================== Review Extraction and Cleaning =================================
 # Get shopee Review
-# url = "https://shopee.sg/DERE-Laptop-T30-Tablet-Laptop-2-in-1-16GB-RAM-1TB-SSD-13-Inch-2K-IPS-Screen-Windows11-11th-Gen-Up-To-2.9GHz-Touch-Screen-Laptop-Support-Stylus-Tablet-Computer-Tablet-Laptop-i.360719776.20559085907?sp_atk=5b3c3e47-5461-467b-84c6-4ac099e6e258&xptdk=5b3c3e47-5461-467b-84c6-4ac099e6e258"
-reviews = pd.read_csv(args.csv)
+if args.csv:
+    reviews = pd.read_csv(args.csv)
+else :
+    reviews = getReviews(args.url)
 
 # Clean reviews remove reviews with no comments
 df = reviews['comment'].to_frame()
@@ -38,7 +49,8 @@ for idx, sentence in df.itertuples():
 df.dropna(inplace=True)
 total_reviews_comments = df.shape[0]
 
-# ========================Rating based (Those without comments)===========================================
+
+# ============================== Rating based (Those without comments) ==============================
 rating_df = reviews['rating'].to_frame()
 # Drop data with comments
 rating_df.drop(comment_id,inplace=True)
@@ -52,7 +64,7 @@ for idx, rating in rating_df.itertuples():
         good_rating += 1
 
 
-# ========================Run Sentient model to get pos reviews==============================
+# ============================== Run Sentient model to Get pos reviews ==============================
 # Get general ratings based on aspects (quality, service, delivery)
 aspects = ['quality', 'service', 'delivery']
 input_data = []
@@ -104,7 +116,8 @@ for index in range(len(post_outputs)):
     else:
         other_reviews.append(post_outputs[index])
 
-# ==================================Filter off potential fake reviews=================================
+
+# ================================ Filter off Potential Fake Reviews ================================
 review_data = [x['sentence'] for x in pos_reviews]
 pos_reviews_df = pd.DataFrame(data=review_data)
 # Detect fake reviews
@@ -112,7 +125,8 @@ fake_idx = isol_predict(input = pos_reviews_df[0].values.tolist())
 # Drop fake reviews
 pos_reviews_df.drop(fake_idx, inplace=True)
 
-# ======================== Analyse filtered positive reviews ===========================
+
+# ================================ Analyse Filtered Positive Reviews ================================
 filtered_data = []
 for idx, sentence in pos_reviews_df.itertuples():
     filtered_data.append({"aspects": aspects, "sentence":sentence})
@@ -127,7 +141,8 @@ else:
     # Postprocessing
     filtered_data = postprocessor(processed_inputs=filtered_processed_inputs, model_outputs=filtered_outputs)
 
-# =========================== Compile data =======================================
+
+# =========================================== Compile data ==========================================
 pos_score = {'quality': 0,
          'service': 0,
          'delivery': 0}

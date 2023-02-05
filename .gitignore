@@ -3,3 +3,6 @@ resOutput.txt
 
 # Ignore __pycache__
 __pycache__/
+
+# Ignore any CSV files created
+*.csv
