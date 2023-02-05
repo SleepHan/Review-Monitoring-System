@@ -7,7 +7,7 @@ The purpose of this project is to combat the issue of fake reviews. Our solution
 
 
 ## Installation
-- Install Python ($\ge$ 3.9)
+- Install Python (>=) 3.9)
 - Install requirements.txt
 ```
 pip install -r requirements.txt
