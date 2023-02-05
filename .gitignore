@@ -1,5 +1,2 @@
-# Ignore CSV files created
-*.csv
-
 # Ignore Output files created
 resOutput.txt

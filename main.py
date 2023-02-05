@@ -13,6 +13,7 @@ from sgnlp.models.sentic_gcn import (
 import pandas as pd
 import numpy as np
 import argparse
+import re
 
 # Create the parser
 parser = argparse.ArgumentParser()
@@ -135,14 +136,8 @@ pos_score = {'quality': 0,
 for x in filtered_data:
     # Match label and aspect
     for y in range(len(x['aspects'])):
-        score_type = x['sentence'][int(x['aspects'][y][0])].lower()
+        score_type = re.sub('\W+', '', x['sentence'][int(x['aspects'][y][0])].lower())
 
-        if '.' in score_type:
-            score_type = score_type.replace('.','')
-        if ',' in score_type:
-            score_type = score_type.replace(',', '')
-        if ')' in score_type:
-            score_type = score_type.replace(')', '')
         pos_score[score_type] += int(x['labels'][y])
 
 bad_score = {'quality': 0,
@@ -152,14 +147,8 @@ bad_score = {'quality': 0,
 for x in other_reviews:
     # Match label and aspect
     for y in range(len(x['aspects'])):
-        score_type = x['sentence'][int(x['aspects'][y][0])].lower()
+        score_type = re.sub('\W+', '', x['sentence'][int(x['aspects'][y][0])].lower())
 
-        if '.' in score_type:
-            score_type = score_type.replace('.','')
-        if ',' in score_type:
-            score_type = score_type.replace(',', '')
-        if ')' in score_type:
-            score_type = score_type.replace(')', '')
         bad_score[score_type] += -int(x['labels'][y])
 
 # Combine with rating scores
